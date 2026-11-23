@@ -13,20 +13,21 @@
   :root{--bg:#0b1733;--onbg:#c9d6f5;--card:#fff;--ink:#12285c;--muted:#51648f;--line:#c9d9f5;--main:#1f5fd6;--main2:#ffc928;--ok:#1f5fd6}
   *{box-sizing:border-box}
   html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;-webkit-text-size-adjust:100%}
-  body{padding:max(6px,env(safe-area-inset-top)) 14px calc(30px + env(safe-area-inset-bottom))}
+  body{padding:max(6px,env(safe-area-inset-top)) 8px calc(14px + env(safe-area-inset-bottom))}
   .wrap{max-width:760px;margin:0 auto}
   button,select{font:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-  .top{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;align-items:center;gap:6px}
-  .top .pick{justify-self:center;max-width:100%}
-  .gear{width:48px;height:48px;border-radius:50%;border:2px solid var(--line);background:#fff;color:var(--ink);display:flex;align-items:center;justify-content:center;padding:0}
+  .top{display:grid;grid-template-columns:minmax(0,1fr) 52px;align-items:center;gap:8px}
+  .top .pick{width:100%}
+  .gear{width:52px;height:52px;border-radius:12px;border:2px solid var(--line);background:#fff;color:var(--ink);display:flex;align-items:center;justify-content:center;padding:0}
   .sheet{align-items:flex-end;padding:0}
   .panel{background:var(--bg);width:100%;max-width:760px;max-height:88vh;overflow-y:auto;border-radius:24px 24px 0 0;padding:16px 16px calc(24px + env(safe-area-inset-bottom))}
   .phead{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
   .phead b{font-size:26px;font-weight:900;color:#fff}
   .pclose{min-height:48px;padding:0 20px;border-radius:14px;border:0;background:var(--main2);color:var(--ink);font-size:20px;font-weight:900}
-  .pick{appearance:none;-webkit-appearance:none;font-size:20px;font-weight:900;color:var(--ink);padding:3px 38px 3px 14px;line-height:1.3;border-radius:999px;border:2px solid var(--line);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10'%3E%3Cpath d='M1 1l7 7 7-7' fill='none' stroke='%2312285c' stroke-width='3'/%3E%3C/svg%3E") no-repeat right 13px center;text-overflow:ellipsis}
-  .first{min-height:calc(100vh - max(6px,env(safe-area-inset-top)));min-height:calc(100svh - max(6px,env(safe-area-inset-top)) - env(safe-area-inset-bottom));display:flex;flex-direction:column}
-  .stage{position:relative;width:max(220px,min(92vw,560px,calc(100vh - 300px)));width:max(220px,min(92vw,560px,calc(100svh - 300px - env(safe-area-inset-top) - env(safe-area-inset-bottom))));aspect-ratio:1;margin:22px auto 6px;flex:none}
+  .pick{appearance:none;-webkit-appearance:none;font-size:20px;font-weight:900;color:var(--ink);height:52px;padding:0 40px 0 14px;line-height:1.2;border-radius:12px;border:2px solid var(--line);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10'%3E%3Cpath d='M1 1l7 7 7-7' fill='none' stroke='%2312285c' stroke-width='3'/%3E%3C/svg%3E") no-repeat right 14px center;text-overflow:ellipsis}
+  .first{min-height:calc(100vh - max(6px,env(safe-area-inset-top)) - 14px);min-height:calc(100svh - max(6px,env(safe-area-inset-top)) - 14px - env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px}
+  .stage{position:relative;width:max(220px,min(calc(100vw - 12px),620px,calc(100vh - 290px)));width:max(220px,min(calc(100vw - 12px),620px,calc(100svh - 290px - env(safe-area-inset-top) - env(safe-area-inset-bottom))));aspect-ratio:1;margin:auto;flex:none}
+  .ctrl{padding:0 6px 6px}
   canvas{width:100%;height:100%;display:block;filter:drop-shadow(0 10px 24px rgba(0,0,0,.45))}
   .pin{position:absolute;left:50%;top:-10px;transform:translateX(-50%);width:13%;z-index:2;filter:drop-shadow(0 3px 3px rgba(0,0,0,.3))}
   .hub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:21%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff4b8,#ffc928 55%,#e9a800);border:6px solid var(--ink);box-shadow:0 4px 10px rgba(0,0,0,.25),inset 0 -4px 0 rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;font-size:clamp(16px,4vw,24px);font-weight:900;color:var(--ink);text-align:center;line-height:1.1;cursor:pointer}
@@ -75,9 +76,11 @@
     <canvas id="wheel" width="1120" height="1120"></canvas>
     <div class="hub" id="hub">抽獎</div>
   </div>
+  <div class="ctrl">
   <button class="go" id="go">開始抽獎</button>
   <button class="undo" id="undo" disabled>恢復上一動作</button>
   <div class="left" id="left"></div>
+  </div>
   </section>
 
 </div>
