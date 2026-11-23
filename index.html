@@ -15,8 +15,15 @@
   body{padding:max(6px,env(safe-area-inset-top)) 14px calc(30px + env(safe-area-inset-bottom))}
   .wrap{max-width:760px;margin:0 auto}
   button,select{font:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-  .top{display:flex;justify-content:center}
-  .pick{appearance:none;-webkit-appearance:none;max-width:92vw;font-size:20px;font-weight:900;color:var(--ink);padding:3px 38px 3px 14px;line-height:1.3;border-radius:999px;border:2px solid var(--line);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10'%3E%3Cpath d='M1 1l7 7 7-7' fill='none' stroke='%2312285c' stroke-width='3'/%3E%3C/svg%3E") no-repeat right 13px center;text-overflow:ellipsis}
+  .top{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;align-items:center;gap:6px}
+  .top .pick{justify-self:center;max-width:100%}
+  .gear{width:48px;height:48px;border-radius:50%;border:2px solid var(--line);background:#fff;color:var(--ink);display:flex;align-items:center;justify-content:center;padding:0}
+  .sheet{align-items:flex-end;padding:0}
+  .panel{background:var(--bg);width:100%;max-width:760px;max-height:88vh;overflow-y:auto;border-radius:24px 24px 0 0;padding:16px 16px calc(24px + env(safe-area-inset-bottom))}
+  .phead{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+  .phead b{font-size:26px;font-weight:900;color:#fff}
+  .pclose{min-height:48px;padding:0 20px;border-radius:14px;border:0;background:var(--main2);color:var(--ink);font-size:20px;font-weight:900}
+  .pick{appearance:none;-webkit-appearance:none;font-size:20px;font-weight:900;color:var(--ink);padding:3px 38px 3px 14px;line-height:1.3;border-radius:999px;border:2px solid var(--line);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10'%3E%3Cpath d='M1 1l7 7 7-7' fill='none' stroke='%2312285c' stroke-width='3'/%3E%3C/svg%3E") no-repeat right 13px center;text-overflow:ellipsis}
   .first{min-height:calc(100vh - max(6px,env(safe-area-inset-top)));min-height:calc(100svh - max(6px,env(safe-area-inset-top)) - env(safe-area-inset-bottom));display:flex;flex-direction:column}
   .stage{position:relative;width:max(220px,min(92vw,560px,calc(100vh - 300px)));width:max(220px,min(92vw,560px,calc(100svh - 300px - env(safe-area-inset-top) - env(safe-area-inset-bottom))));aspect-ratio:1;margin:22px auto 6px;flex:none}
   canvas{width:100%;height:100%;display:block;filter:drop-shadow(0 10px 24px rgba(0,0,0,.45))}
@@ -60,7 +67,7 @@
 <body>
 <div class="wrap">
   <section class="first">
-  <div class="top"><select class="pick" id="pick" aria-label="選擇名單"></select></div>
+  <div class="top"><span class="sp"></span><select class="pick" id="pick" aria-label="選擇名單"></select><button class="gear" id="gearBtn" aria-label="設定"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div>
 
   <div class="stage" id="stage">
     <svg class="pin" viewBox="0 0 60 70" aria-hidden="true"><path d="M30 68 L6 14 A26 26 0 0 1 54 14 Z" fill="#ffc928" stroke="#12285c" stroke-width="5" stroke-linejoin="round"/><circle cx="30" cy="20" r="7" fill="#12285c"/></svg>
@@ -72,20 +79,26 @@
   <div class="left" id="left"></div>
   </section>
 
+</div>
+
+<div class="over sheet" id="setBox" hidden>
+  <div class="panel">
+    <div class="phead"><b>設定</b><button class="pclose" id="setClose">關閉</button></div>
   <div class="lbl">轉盤轉幾秒</div>
-  <div class="secs" id="secs"><button class="sec" data-sec="1">1 秒</button><button class="sec" data-sec="3">3 秒</button></div>
+    <div class="secs" id="secs"><button class="sec" data-sec="1">1 秒</button><button class="sec" data-sec="3">3 秒</button></div>
 
-  <div class="opt"><span>抽過刪除</span><button class="tog on" id="noRepeat">開</button></div>
+    <div class="opt"><span>抽過刪除</span><button class="tog on" id="noRepeat">開</button></div>
 
-  <div class="lbl">中獎紀錄</div>
-  <div id="hist"></div>
-  <button class="copy" id="copyWin">複製得獎名單（貼到 LINE）</button>
+    <div class="lbl">中獎紀錄</div>
+    <div id="hist"></div>
+    <button class="copy" id="copyWin">複製得獎名單（貼到 LINE）</button>
 
-  <button class="btn2" id="reload">更新名單</button>
-  <button class="btn2" id="clear">清除這一團的中獎紀錄</button>
-  <button class="btn2 del" id="delTour">刪除這一團的名單（用完了）</button>
-  <button class="btn2" id="pinBtn">更換 PIN</button>
-  <div class="msg" id="msg"></div>
+    <button class="btn2" id="reload">更新名單</button>
+    <button class="btn2" id="clear">清除這一團的中獎紀錄</button>
+    <button class="btn2 del" id="delTour">刪除這一團的名單（用完了）</button>
+    <button class="btn2" id="pinBtn">更換 PIN</button>
+    <div class="msg" id="msg"></div>
+  </div>
 </div>
 
 <div class="over" id="winBox" hidden>
@@ -459,7 +472,10 @@
       say('已刪除「' + (d.tour || '') + '」的名單');
     } catch (e) { say('刪除失敗：' + e.message); }
   };
-  $('pinBtn').onclick = askPin;
+  $('pinBtn').onclick = () => { $('setBox').hidden = true; askPin(); };
+  $('gearBtn').onclick = () => { $('setBox').hidden = false; };
+  $('setClose').onclick = () => { $('setBox').hidden = true; };
+  $('setBox').addEventListener('click', e => { if (e.target === $('setBox')) $('setBox').hidden = true; });
   $('pinOk').onclick = () => { S.pin = $('pinIn').value.trim(); store.set('lt_pin', S.pin); $('pinBox').hidden = true; init(); };
   $('pinIn').addEventListener('keydown', e => { if (e.key === 'Enter') $('pinOk').click(); });
 
