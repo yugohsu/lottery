@@ -63,6 +63,10 @@
   .fl{display:block;font-size:18px;font-weight:900;color:var(--muted);margin:12px 0 4px}
   .box.ed input,.box.ed textarea{width:100%;font:inherit;font-size:22px;font-weight:800;padding:10px 12px;border-radius:12px;border:2px solid var(--line);margin:0;color:var(--ink);text-align:left}
   .box.ed .two{margin-top:16px}
+  .nmcols{display:grid;grid-template-columns:repeat(2,124px);gap:18px;justify-content:center}
+  .nmcols .fl{text-align:center;display:block}
+  .nmcols textarea{resize:vertical;line-height:1.35}
+  .nmtip{text-align:center;font-size:16px;font-weight:800;opacity:.7;margin-top:6px}
   .msg{font-size:18px;font-weight:800;color:var(--onbg);margin-top:8px;text-align:center}
   .over{position:fixed;inset:0;background:rgba(18,40,92,.72);display:flex;align-items:center;justify-content:center;z-index:20;padding:20px}
   .over[hidden]{display:none}
@@ -113,8 +117,6 @@
 
     <button class="btn2" id="reload">更新名單</button>
     <button class="btn2" id="clear">清除這一團的中獎紀錄</button>
-    <div class="lbl">目前這個名單</div>
-    <div class="quick"><button id="qAdd">＋ 加人</button><button id="qEdit">修改名單</button></div>
     <div class="lbl">名單管理</div>
     <div id="mgr"></div>
     <button class="copy" id="addList">新增名單</button>
@@ -130,10 +132,11 @@
     <input id="edDate" type="date">
     <label class="fl">團名（可以不填）</label>
     <input id="edName" type="text" placeholder="例如：大阪環球">
-    <label class="fl">大人（一行一個名字）</label>
-    <textarea id="edAdults" rows="6"></textarea>
-    <label class="fl">小孩（一行一個名字）</label>
-    <textarea id="edKids" rows="6"></textarea>
+    <div class="nmcols">
+      <div><label class="fl">大人</label><textarea id="edAdults" rows="10"></textarea></div>
+      <div><label class="fl">小孩</label><textarea id="edKids" rows="10"></textarea></div>
+    </div>
+    <div class="nmtip">一行一個名字</div>
     <div class="two"><button id="edNo">取消</button><button class="yes" id="edYes">儲存</button></div>
   </div>
 </div>
@@ -581,8 +584,8 @@
     return String(v || '').split(/[\n\r,，、;；\t]+|\s{2,}|\s+/).map(x => x.trim()).filter(x => x && !seen.has(x) && seen.add(x));
   }
   $('addList').onclick = () => openEditor(null);
-  $('qEdit').onclick = () => { if (S.data) openEditor(S.data); else openEditor(null); };
-  $('qAdd').onclick = () => {
+  if ($('qEdit')) $('qEdit').onclick = () => { if (S.data) openEditor(S.data); else openEditor(null); };
+  if ($('qAdd')) $('qAdd').onclick = () => {
     const L = curList();
     if (!S.data) { openEditor(null); return; }
     const nm = (L && L.name) || (S.tab === 'kids' ? '小孩' : '大人');
