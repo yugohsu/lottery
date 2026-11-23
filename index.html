@@ -406,7 +406,9 @@
     $('mgr').innerHTML = S.tours.length ? S.tours.map(t => {
       const st = String(t.start || '').split('-');
       const dt = st.length === 3 ? Number(st[1]) + '/' + Number(st[2]) : '';
-      return '<div class="mg"><div><b>' + esc(dt + ' ' + (t.tour || '')) + '</b><small>' + (t.n ? t.n + ' 人' : '') + (t.updated ? '　' + esc(t.updated) : '') + '</small></div><button data-edit="' + esc(t.key) + '">修改</button><button class="del" data-delk="' + esc(t.key) + '">刪除</button></div>';
+      const nm = String(t.tour || '');
+      const label = dt && nm.indexOf(dt) === 0 ? nm : (dt + ' ' + nm).trim();
+      return '<div class="mg"><div><b>' + esc(label) + '</b><small>' + (t.n ? t.n + ' 人' : '') + (t.updated ? '　' + esc(t.updated) : '') + '</small></div><button data-edit="' + esc(t.key) + '">修改</button><button class="del" data-delk="' + esc(t.key) + '">刪除</button></div>';
     }).join('') : '<div class="empty">還沒有名單</div>';
     const h = hist();
     $('hist').innerHTML = h.length ? h.map(x => '<div class="h"><span>' + esc(x.who) + '</span><small>' + esc(x.list) + '</small></div>').join('') : '<div class="empty">還沒有人中獎</div>';
