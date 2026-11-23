@@ -291,7 +291,7 @@
         if (last) h.unshift({ who: last, list: L.name, at: Date.now() + 1 });
         store.set(histKey(), h.slice(0, 300));
         $('winList').innerHTML = last
-          ? '<div class="rk">第二名</div><div class="w sm">' + esc(who) + '</div><div class="rk">第一名</div><div class="w sm">' + esc(last) + '</div>'
+          ? '<div class="rk">第一名</div><div class="w sm">' + esc(last) + '</div><div class="rk">第二名</div><div class="w sm">' + esc(who) + '</div>'
           : '<div class="w">' + esc(who) + '</div>';
         $('winBox').hidden = false;
       }
@@ -331,12 +331,28 @@
 
   async function loadTour(key) {
     say('讀取名單中…');
-    const j = await api({ action: 'get', key: key });
-    S.data = j.data;
+    try {
+      const j = await api({ action: 'get', key: key });
+      S.data = j.data;
+      store.set('lt_cache_' + key, j.data);
+      say('名單更新時間：' + (j.data.updated || '') + '（已存在這台，沒網路也能抽）');
+    } catch (e) {
+      const c = store.get('lt_cache_' + key, null);
+      if (!c || /PIN|pin|密碼/.test(e.message)) throw e;
+      S.data = c;
+      say('沒有網路，使用存好的名單（' + (c.updated || '') + '）');
+    }
     store.set('lt_last', key);
-    store.set('lt_cache_' + key, j.data);
-    say('名單更新時間：' + (j.data.updated || ''));
     renderAll();
+  }
+  /* 有網路時，把每一團的名單都先存到這台，離線也能切換 */
+  async function prefetchAll() {
+    const keep = new Set(S.tours.map(t => t.key));
+    try { Object.keys(localStorage).forEach(k => { if (k.indexOf('lt_cache_') === 0 && !keep.has(k.slice(9))) localStorage.removeItem(k); }); } catch (e) {}
+    for (const t of S.tours) {
+      if (S.data && t.key === S.data.key) continue;
+      try { const j = await api({ action: 'get', key: t.key }); store.set('lt_cache_' + t.key, j.data); } catch (e) {}
+    }
   }
   function pickDefault() {
     const last = store.get('lt_last', '');
@@ -354,15 +370,22 @@
       say('讀取中…');
       const j = await api({ action: 'list' });
       S.tours = j.tours || [];
+      store.set('lt_tours', S.tours);
       if (!S.tours.length) { S.data = null; renderAll(); say('還沒有任何抽獎名單，請先在 Excel 按「上傳到轉盤」'); return; }
       const key = (S.data && S.tours.some(t => t.key === S.data.key)) ? S.data.key : pickDefault();
       await loadTour(key);
+      prefetchAll();
     } catch (e) {
       if (/PIN|pin|密碼/.test(e.message)) { say('PIN 不對，請重新輸入'); askPin(); return; }
-      const last = store.get('lt_last', '');
-      const c = last ? store.get('lt_cache_' + last, null) : null;
-      if (c) { S.data = c; S.tours = [{ key: c.key, tour: c.tour, start: c.start }]; renderAll(); say('沒有網路，先用上次的名單（' + (c.updated || '') + '）'); }
-      else say('讀取失敗：' + e.message);
+      const tours = store.get('lt_tours', []).filter(t => store.get('lt_cache_' + t.key, null));
+      if (tours.length) {
+        S.tours = tours;
+        const last = store.get('lt_last', '');
+        const k = (S.data && tours.some(t => t.key === S.data.key)) ? S.data.key : (tours.some(t => t.key === last) ? last : tours[0].key);
+        S.data = store.get('lt_cache_' + k, null);
+        renderAll();
+        say('沒有網路，使用存好的名單（' + ((S.data && S.data.updated) || '') + '）');
+      } else say('讀取失敗：' + e.message);
     }
   }
   function askPin() { $('pinIn').value = ''; $('pinBox').hidden = false; setTimeout(() => $('pinIn').focus(), 50); }
@@ -442,6 +465,7 @@
 
   renderAll();
   init();
+  if ('serviceWorker' in navigator) { try { navigator.serviceWorker.register('sw.js'); } catch (e) {} }
 })();
 </script>
 </body>
