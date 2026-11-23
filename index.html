@@ -50,6 +50,7 @@
   .h{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 14px;border-radius:14px;background:var(--card);border:2px solid var(--line);margin-top:8px;font-size:20px;font-weight:900}
   .h small{font-size:15px;color:var(--muted);font-weight:800}
   .empty{text-align:center;font-size:20px;font-weight:900;color:var(--onbg);padding:24px 0}
+  .btn2.danger{background:#d93636;border-color:#d93636;color:#fff}
   .copy{display:block;width:100%;margin-top:10px;min-height:60px;border-radius:16px;border:0;background:var(--main);color:#fff;font-size:22px;font-weight:900}
   .btn2{display:block;width:100%;margin-top:10px;min-height:56px;border-radius:14px;border:2px solid var(--line);background:var(--card);font-size:20px;font-weight:900;color:var(--ink)}
   .del{color:#c0392b;border-color:#f0b7b0}
@@ -87,7 +88,7 @@
 <body>
 <div class="wrap">
   <section class="first">
-  <div class="top"><button class="gear" id="refBtn" aria-label="更新名單"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button><select class="pick" id="pick" aria-label="選擇名單"></select><button class="gear" id="gearBtn" aria-label="設定"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div>
+  <div class="top"><button class="gear" id="refBtn" aria-label="線上同步名單"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button><select class="pick" id="pick" aria-label="選擇名單"></select><button class="gear" id="gearBtn" aria-label="設定"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div>
 
   <div class="stage" id="stage">
     <svg class="pin" viewBox="0 0 60 70" aria-hidden="true"><path d="M30 68 L6 14 A26 26 0 0 1 54 14 Z" fill="#ffc928" stroke="#12285c" stroke-width="5" stroke-linejoin="round"/><circle cx="30" cy="20" r="7" fill="#12285c"/></svg>
@@ -113,14 +114,14 @@
 
     <div class="lbl">中獎紀錄</div>
     <div id="hist"></div>
-    <button class="copy" id="copyWin">複製得獎名單（貼到 LINE）</button>
+    <button class="copy" id="copyWin">複製得獎名單</button>
 
-    <button class="btn2" id="reload">更新名單</button>
-    <button class="btn2" id="clear">清除這一團的中獎紀錄</button>
+    <button class="btn2" id="reload">線上同步名單</button>
+    <button class="btn2 danger" id="clear">清除中獎紀錄</button>
     <div class="lbl">名單管理</div>
     <div id="mgr"></div>
     <button class="copy" id="addList">新增名單</button>
-    <button class="btn2" id="pinBtn">更換 PIN</button>
+    <button class="btn2" id="pinBtn">變更密碼</button>
     <div class="msg" id="msg"></div>
   </div>
 </div>
@@ -167,7 +168,7 @@
 
 <div class="over" id="pinBox" hidden>
   <div class="box">
-    <div class="t">刪除、修改名單要輸入 PIN<br>（跟下雨通知一樣）</div>
+    <div class="t">輸入密碼</div>
     <input id="pinIn" type="password" inputmode="numeric" autocomplete="off">
     <div class="two"><button id="pinNo">取消</button><button class="yes" id="pinOk">確定</button></div>
   </div>
@@ -203,14 +204,14 @@
     const write = body.action !== 'list' && body.action !== 'get';
     if (!write) return rawApi(Object.assign({}, body));
     for (let k = 0; k < 3; k++) {
-      if (!S.pin) { S.pin = await askPinAsync(); if (!S.pin) throw new Error('沒有輸入 PIN，所以沒有變更'); }
+      if (!S.pin) { S.pin = await askPinAsync(); if (!S.pin) throw new Error('沒有輸入密碼，所以沒有變更'); }
       try { return await rawApi(Object.assign({}, body, { pin: S.pin })); }
       catch (e) {
         if (!/密碼|PIN/i.test(e.message)) throw e;
         S.pin = ''; store.set('lt_pin', '');
       }
     }
-    throw new Error('PIN 不對');
+    throw new Error('密碼不對');
   }
   function askPinAsync() {
     return new Promise(res => {
@@ -535,7 +536,7 @@
       ta.remove();
     }
     $('copyWin').textContent = ok ? '已複製，可以貼到 LINE' : '複製失敗，請再按一次';
-    setTimeout(() => { $('copyWin').textContent = '複製得獎名單（貼到 LINE）'; }, 2000);
+    setTimeout(() => { $('copyWin').textContent = '複製得獎名單'; }, 2000);
   };
   $('reload').onclick = () => init();
   $('clear').onclick = async () => {
@@ -648,7 +649,7 @@
     } catch (e) { await askConfirm('儲存失敗：' + e.message); }
     btn.disabled = false; btn.textContent = '儲存';
   };
-  $('pinBtn').onclick = async () => { const v = await askPinAsync(); if (v) { S.pin = v; say('PIN 已更新'); } };
+  $('pinBtn').onclick = async () => { const v = await askPinAsync(); if (v) { S.pin = v; say('密碼已變更'); } };
   $('gearBtn').onclick = () => { $('setBox').hidden = false; };
   $('refBtn').onclick = async () => {
     if (S.spinning || $('refBtn').classList.contains('busy')) return;
