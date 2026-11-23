@@ -151,9 +151,9 @@
 
 <div class="over" id="pinBox" hidden>
   <div class="box">
-    <div class="t">請輸入 PIN（跟下雨通知一樣）</div>
+    <div class="t">刪除、修改名單要輸入 PIN<br>（跟下雨通知一樣）</div>
     <input id="pinIn" type="password" inputmode="numeric" autocomplete="off">
-    <button class="ok" id="pinOk">確定</button>
+    <div class="two"><button id="pinNo">取消</button><button class="yes" id="pinOk">確定</button></div>
   </div>
 </div>
 
@@ -176,12 +176,35 @@
   };
   S.pin = store.get('lt_pin', '');
 
-  async function api(body) {
-    body.pin = S.pin;
+  async function rawApi(body) {
     const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) });
     const j = await r.json();
     if (!j.ok) throw new Error(j.msg || '讀取失敗');
     return j;
+  }
+  /* 讀名單不用 PIN；新增、修改、刪除才要 PIN（輸入一次會記住） */
+  async function api(body) {
+    const write = body.action !== 'list' && body.action !== 'get';
+    if (!write) return rawApi(Object.assign({}, body));
+    for (let k = 0; k < 3; k++) {
+      if (!S.pin) { S.pin = await askPinAsync(); if (!S.pin) throw new Error('沒有輸入 PIN，所以沒有變更'); }
+      try { return await rawApi(Object.assign({}, body, { pin: S.pin })); }
+      catch (e) {
+        if (!/密碼|PIN/i.test(e.message)) throw e;
+        S.pin = ''; store.set('lt_pin', '');
+      }
+    }
+    throw new Error('PIN 不對');
+  }
+  function askPinAsync() {
+    return new Promise(res => {
+      $('pinIn').value = '';
+      $('pinBox').hidden = false;
+      setTimeout(() => $('pinIn').focus(), 50);
+      const done = v => { $('pinBox').hidden = true; $('pinOk').onclick = null; $('pinNo').onclick = null; if (v) store.set('lt_pin', v); res(v); };
+      $('pinOk').onclick = () => done($('pinIn').value.trim());
+      $('pinNo').onclick = () => done('');
+    });
   }
   function say(t) { $('msg').textContent = t || ''; }
   function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
@@ -426,7 +449,6 @@
     return S.tours[0] ? S.tours[0].key : '';
   }
   async function init() {
-    if (!S.pin) { askPin(); return; }
     try {
       say('讀取中…');
       const j = await api({ action: 'list' });
@@ -437,7 +459,6 @@
       await loadTour(key);
       prefetchAll();
     } catch (e) {
-      if (/PIN|pin|密碼/.test(e.message)) { say('PIN 不對，請重新輸入'); askPin(); return; }
       const tours = store.get('lt_tours', []).filter(t => store.get('lt_cache_' + t.key, null));
       if (tours.length) {
         S.tours = tours;
@@ -449,7 +470,6 @@
       } else say('讀取失敗：' + e.message);
     }
   }
-  function askPin() { $('pinIn').value = ''; $('pinBox').hidden = false; setTimeout(() => $('pinIn').focus(), 50); }
 
   /* ---------- 按鈕 ---------- */
   $('go').onclick = spin;
@@ -576,7 +596,7 @@
     } catch (e) { await askConfirm('儲存失敗：' + e.message); }
     btn.disabled = false; btn.textContent = '儲存';
   };
-  $('pinBtn').onclick = () => { $('setBox').hidden = true; askPin(); };
+  $('pinBtn').onclick = async () => { const v = await askPinAsync(); if (v) { S.pin = v; say('PIN 已更新'); } };
   $('gearBtn').onclick = () => { $('setBox').hidden = false; };
   $('refBtn').onclick = async () => {
     if (S.spinning || $('refBtn').classList.contains('busy')) return;
@@ -585,7 +605,6 @@
   };
   $('setClose').onclick = () => { $('setBox').hidden = true; };
   $('setBox').addEventListener('click', e => { if (e.target === $('setBox')) $('setBox').hidden = true; });
-  $('pinOk').onclick = () => { S.pin = $('pinIn').value.trim(); store.set('lt_pin', S.pin); $('pinBox').hidden = true; init(); };
   $('pinIn').addEventListener('keydown', e => { if (e.key === 'Enter') $('pinOk').click(); });
 
   renderAll();
