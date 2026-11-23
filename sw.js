@@ -1,7 +1,7 @@
 /* 幸運轉盤：離線也能打開（網頁和圖示存在手機裡） */
-const CACHE = 'lottery-v1';
+const CACHE = 'lottery-v2';
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', './index.html', './apple-touch-icon.png'])));
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', './index.html', './wheel-icon-180.png'])));
   self.skipWaiting();
 });
 self.addEventListener('activate', e => {
