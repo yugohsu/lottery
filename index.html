@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="抽獎轉盤">
+<meta name="apple-mobile-web-app-title" content="幸運轉盤">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#0b1733">
 <title>抽獎轉盤</title>
 <style>
@@ -16,15 +17,16 @@
   button,select{font:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
   .top{display:flex;justify-content:center}
   .pick{appearance:none;-webkit-appearance:none;max-width:92vw;font-size:20px;font-weight:900;color:var(--ink);padding:3px 38px 3px 14px;line-height:1.3;border-radius:999px;border:2px solid var(--line);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10'%3E%3Cpath d='M1 1l7 7 7-7' fill='none' stroke='%2312285c' stroke-width='3'/%3E%3C/svg%3E") no-repeat right 13px center;text-overflow:ellipsis}
-  .stage{position:relative;width:min(92vw,560px);aspect-ratio:1;margin:22px auto 6px}
+  .first{min-height:calc(100vh - max(6px,env(safe-area-inset-top)));min-height:calc(100svh - max(6px,env(safe-area-inset-top)) - env(safe-area-inset-bottom));display:flex;flex-direction:column}
+  .stage{position:relative;width:max(220px,min(92vw,560px,calc(100vh - 300px)));width:max(220px,min(92vw,560px,calc(100svh - 300px - env(safe-area-inset-top) - env(safe-area-inset-bottom))));aspect-ratio:1;margin:22px auto 6px;flex:none}
   canvas{width:100%;height:100%;display:block;filter:drop-shadow(0 10px 24px rgba(0,0,0,.45))}
   .pin{position:absolute;left:50%;top:-10px;transform:translateX(-50%);width:13%;z-index:2;filter:drop-shadow(0 3px 3px rgba(0,0,0,.3))}
   .hub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:21%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff4b8,#ffc928 55%,#e9a800);border:6px solid var(--ink);box-shadow:0 4px 10px rgba(0,0,0,.25),inset 0 -4px 0 rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;font-size:clamp(16px,4vw,24px);font-weight:900;color:var(--ink);text-align:center;line-height:1.1;cursor:pointer}
-  .go{display:block;width:100%;max-width:560px;margin:10px auto 0;border:0;border-radius:22px;background:var(--main2);color:var(--ink);font-size:34px;font-weight:900;padding:22px 8px;box-shadow:0 6px 0 #d19f00}
+  .go{display:block;width:100%;max-width:560px;margin:10px auto 0;border:0;border-radius:22px;background:var(--main2);color:var(--ink);font-size:34px;font-weight:900;padding:16px 8px;box-shadow:0 6px 0 #d19f00}
   .go:disabled{opacity:.55}
-  .undo{display:block;width:100%;max-width:560px;margin:12px auto 0;min-height:58px;border-radius:18px;border:3px solid var(--ink);background:var(--card);color:var(--ink);font-size:22px;font-weight:900}
+  .undo{display:block;width:100%;max-width:560px;margin:12px auto 0;min-height:54px;border-radius:18px;border:3px solid var(--ink);background:var(--card);color:var(--ink);font-size:22px;font-weight:900}
   .undo:disabled{opacity:.35}
-  .left{text-align:center;font-size:18px;font-weight:800;color:var(--onbg);margin-top:10px}
+  .left{text-align:center;font-size:20px;font-weight:900;color:var(--onbg);margin-top:10px}
   .lbl{margin:16px 0 8px;font-size:18px;font-weight:900;color:var(--onbg)}
   .secs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .sec{min-height:58px;border-radius:16px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-size:21px;font-weight:900}
@@ -45,6 +47,8 @@
   .box .t{font-size:22px;font-weight:900;color:var(--muted)}
   .box .t.big{font-size:40px;color:var(--ink)}
   .box .w{font-size:clamp(48px,14vw,84px);font-weight:900;color:var(--main);background:#fff6cf;border-radius:20px;padding:8px 6px;margin:12px 0 18px;line-height:1.15;word-break:break-all}
+  .box .rk{font-size:24px;font-weight:900;color:var(--muted);margin-top:8px}
+  .box .w.sm{font-size:clamp(40px,11vw,64px);margin:6px 0 12px}
   .box .ok{width:100%;border:0;border-radius:18px;background:var(--ink);color:#fff;font-size:26px;font-weight:900;padding:16px}
   .box input{width:100%;font:inherit;font-size:28px;font-weight:900;text-align:center;padding:12px;border-radius:14px;border:2px solid var(--line);margin:12px 0}
   .box .cq{font-size:26px;font-weight:900;color:var(--ink);line-height:1.5;margin:6px 0 20px;white-space:pre-line}
@@ -55,6 +59,7 @@
 </head>
 <body>
 <div class="wrap">
+  <section class="first">
   <div class="top"><select class="pick" id="pick" aria-label="選擇名單"></select></div>
 
   <div class="stage" id="stage">
@@ -65,6 +70,7 @@
   <button class="go" id="go">開始抽獎</button>
   <button class="undo" id="undo" disabled>恢復上一動作</button>
   <div class="left" id="left"></div>
+  </section>
 
   <div class="lbl">轉盤轉幾秒</div>
   <div class="secs" id="secs"><button class="sec" data-sec="1">1 秒</button><button class="sec" data-sec="3">3 秒</button></div>
@@ -85,7 +91,7 @@
 <div class="over" id="winBox" hidden>
   <div class="box">
     <div class="t big">恭喜</div>
-    <div class="w" id="winName"></div>
+    <div id="winList"></div>
     <button class="ok" id="winOk">關閉</button>
   </div>
 </div>
@@ -278,10 +284,15 @@
         const who = names[pick];
         const L = curList();
         const h = hist();
-        pushUndo({ type: 'draw', key: histKey(), hist: h.slice(), tourKey: S.data.key, label: '取消 ' + who + ' 的中獎' });
+        /* 只剩兩人：指到的是第二名，最後一位直接是第一名 */
+        const last = (store.get('lt_norep', true) && names.length === 2) ? names[1 - pick] : '';
+        pushUndo({ type: 'draw', key: histKey(), hist: h.slice(), tourKey: S.data.key, label: '取消 ' + who + (last ? '、' + last : '') + ' 的中獎' });
         h.unshift({ who: who, list: L.name, at: Date.now() });
+        if (last) h.unshift({ who: last, list: L.name, at: Date.now() + 1 });
         store.set(histKey(), h.slice(0, 300));
-        $('winName').textContent = who;
+        $('winList').innerHTML = last
+          ? '<div class="rk">第二名</div><div class="w sm">' + esc(who) + '</div><div class="rk">第一名</div><div class="w sm">' + esc(last) + '</div>'
+          : '<div class="w">' + esc(who) + '</div>';
         $('winBox').hidden = false;
       }
     })(t0);
@@ -306,7 +317,7 @@
     if (!L0.some(x => x.id === S.tab) && L0[0]) S.tab = L0[0].id;
     renderPick();
     const r = remaining(), L = curList();
-    $('left').textContent = L ? L.name + '還有 ' + r.length + ' 人可以抽（共 ' + L.list.length + ' 人）' : '';
+    $('left').textContent = L ? '還剩下 ' + r.length + ' 人（共 ' + L.list.length + ' 人）' : '';
     const nr = store.get('lt_norep', true);
     $('noRepeat').classList.toggle('on', nr);
     $('noRepeat').textContent = nr ? '開' : '關';
