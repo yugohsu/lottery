@@ -11,70 +11,54 @@
   :root{--bg:#eaf2ff;--card:#fff;--ink:#12285c;--muted:#51648f;--line:#c9d9f5;--main:#1f5fd6;--main2:#ffc928;--ok:#1f5fd6}
   *{box-sizing:border-box}
   html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;-webkit-text-size-adjust:100%}
-  body{padding:max(14px,env(safe-area-inset-top)) 14px calc(30px + env(safe-area-inset-bottom))}
+  body{padding:max(12px,env(safe-area-inset-top)) 14px calc(30px + env(safe-area-inset-bottom))}
   .wrap{max-width:760px;margin:0 auto}
-  button{font:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-  h1{margin:4px 0 2px;font-size:30px;font-weight:900}
-  .dates{font-size:20px;font-weight:800;color:var(--muted)}
-  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .sel{width:100%;font:inherit;font-size:20px;font-weight:900;padding:12px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink);margin-top:10px}
-  .lbl{margin:16px 0 8px;font-size:18px;font-weight:900;color:var(--muted)}
-  .chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
-  .chip{flex:none;font-size:19px;font-weight:900;min-height:54px;padding:0 16px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
-  .chip small{display:block;font-size:14px;font-weight:800;color:var(--muted)}
-  .chip.on{background:var(--main);border-color:var(--main);color:#fff}
-  .chip.on small{color:#fff}
-  .tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
-  .tab{font-size:20px;font-weight:900;min-height:60px;border-radius:16px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
-  .tab small{display:block;font-size:14px;color:var(--muted)}
-  .tab.on{background:var(--ink);border-color:var(--ink);color:#fff}
-  .tab.on small{color:#fff}
-  .stage{position:relative;width:min(92vw,560px);aspect-ratio:1;margin:18px auto 6px}
-  canvas{width:100%;height:100%;display:block}
-  .pin{position:absolute;left:50%;top:-6px;transform:translateX(-50%);width:0;height:0;border-left:20px solid transparent;border-right:20px solid transparent;border-top:40px solid var(--ink);filter:drop-shadow(0 2px 2px rgba(0,0,0,.25));z-index:2}
-  .hub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:22%;aspect-ratio:1;border-radius:50%;background:#fff;border:6px solid var(--ink);display:flex;align-items:center;justify-content:center;font-size:clamp(16px,4vw,24px);font-weight:900;text-align:center;line-height:1.1}
+  button,select{font:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+  .top{display:flex;justify-content:center}
+  .pick{appearance:none;-webkit-appearance:none;max-width:92vw;font-size:20px;font-weight:900;color:var(--ink);padding:10px 44px 10px 18px;border-radius:999px;border:2px solid var(--line);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10'%3E%3Cpath d='M1 1l7 7 7-7' fill='none' stroke='%2312285c' stroke-width='3'/%3E%3C/svg%3E") no-repeat right 16px center;text-overflow:ellipsis}
+  .stage{position:relative;width:min(92vw,560px);aspect-ratio:1;margin:14px auto 6px}
+  canvas{width:100%;height:100%;display:block;filter:drop-shadow(0 10px 18px rgba(18,40,92,.25))}
+  .pin{position:absolute;left:50%;top:-10px;transform:translateX(-50%);width:13%;z-index:2;filter:drop-shadow(0 3px 3px rgba(0,0,0,.3))}
+  .hub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:21%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff4b8,#ffc928 55%,#e9a800);border:6px solid var(--ink);box-shadow:0 4px 10px rgba(0,0,0,.25),inset 0 -4px 0 rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;font-size:clamp(16px,4vw,24px);font-weight:900;color:var(--ink);text-align:center;line-height:1.1;cursor:pointer}
   .go{display:block;width:100%;max-width:560px;margin:10px auto 0;border:0;border-radius:22px;background:var(--main2);color:var(--ink);font-size:34px;font-weight:900;padding:22px 8px;box-shadow:0 6px 0 #d19f00}
   .go:disabled{opacity:.55}
+  .undo{display:block;width:100%;max-width:560px;margin:12px auto 0;min-height:58px;border-radius:18px;border:3px solid var(--ink);background:var(--card);color:var(--ink);font-size:22px;font-weight:900}
+  .undo:disabled{opacity:.35}
   .left{text-align:center;font-size:18px;font-weight:800;color:var(--muted);margin-top:10px}
+  .lbl{margin:16px 0 8px;font-size:18px;font-weight:900;color:var(--muted)}
+  .secs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .sec{min-height:58px;border-radius:16px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-size:21px;font-weight:900}
+  .sec.on{background:var(--main2);border-color:var(--main2)}
   .opt{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;padding:14px;border:2px solid var(--line);border-radius:16px;background:var(--card);font-size:19px;font-weight:900}
   .tog{min-width:84px;min-height:52px;border-radius:26px;border:2px solid var(--line);background:var(--card);font-size:20px;font-weight:900;color:var(--muted)}
   .tog.on{background:var(--ok);border-color:var(--ok);color:#fff}
-  .hist{margin-top:10px}
   .h{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 14px;border-radius:14px;background:var(--card);border:2px solid var(--line);margin-top:8px;font-size:20px;font-weight:900}
   .h small{font-size:15px;color:var(--muted);font-weight:800}
+  .empty{text-align:center;font-size:20px;font-weight:900;color:var(--muted);padding:24px 0}
+  .copy{display:block;width:100%;margin-top:10px;min-height:60px;border-radius:16px;border:0;background:var(--main);color:#fff;font-size:22px;font-weight:900}
   .btn2{display:block;width:100%;margin-top:10px;min-height:56px;border-radius:14px;border:2px solid var(--line);background:var(--card);font-size:20px;font-weight:900;color:var(--ink)}
+  .del{color:#c0392b;border-color:#f0b7b0}
   .msg{font-size:18px;font-weight:800;color:var(--muted);margin-top:8px;text-align:center}
-  .over{position:fixed;inset:0;background:rgba(43,33,24,.7);display:flex;align-items:center;justify-content:center;z-index:20;padding:20px}
+  .over{position:fixed;inset:0;background:rgba(18,40,92,.72);display:flex;align-items:center;justify-content:center;z-index:20;padding:20px}
   .over[hidden]{display:none}
   .box{background:#fff;border-radius:28px;padding:26px 22px;text-align:center;width:min(92vw,520px)}
   .box .t{font-size:22px;font-weight:900;color:var(--muted)}
-  .box .w{font-size:clamp(48px,14vw,84px);font-weight:900;color:var(--main);background:#fff6cf;border-radius:20px;padding:8px 6px;margin:10px 0 18px;line-height:1.15;word-break:break-all}
+  .box .t.big{font-size:40px;color:var(--ink)}
+  .box .w{font-size:clamp(48px,14vw,84px);font-weight:900;color:var(--main);background:#fff6cf;border-radius:20px;padding:8px 6px;margin:12px 0 18px;line-height:1.15;word-break:break-all}
   .box .ok{width:100%;border:0;border-radius:18px;background:var(--ink);color:#fff;font-size:26px;font-weight:900;padding:16px}
   .box input{width:100%;font:inherit;font-size:28px;font-weight:900;text-align:center;padding:12px;border-radius:14px;border:2px solid var(--line);margin:12px 0}
-  .tours{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
-  .tour{font-size:20px;font-weight:900;min-height:60px;padding:6px 10px;border-radius:16px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
-  .tour.on{background:var(--main);border-color:var(--main);color:#fff}
-  .secs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
-  .sec{min-height:58px;border-radius:16px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-size:21px;font-weight:900}
-  .sec.on{background:var(--main2);border-color:var(--main2)}
-  .copy{display:block;width:100%;margin-top:10px;min-height:60px;border-radius:16px;border:0;background:var(--main);color:#fff;font-size:22px;font-weight:900}
-  .del{color:#c0392b;border-color:#f0b7b0}
-  .undo{display:block;width:100%;max-width:560px;margin:12px auto 0;min-height:58px;border-radius:18px;border:3px solid var(--ink);background:var(--card);color:var(--ink);font-size:22px;font-weight:900}
-  .undo:disabled{opacity:.35}
-  .box .t.big{font-size:40px;color:var(--ink);text-align:center}
-  .empty{text-align:center;font-size:20px;font-weight:900;color:var(--muted);padding:30px 0}
+  .box .cq{font-size:26px;font-weight:900;color:var(--ink);line-height:1.5;margin:6px 0 20px;white-space:pre-line}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .two button{border-radius:18px;font-size:26px;font-weight:900;padding:16px;border:2px solid var(--line);background:#fff;color:var(--ink)}
+  .two .yes{background:var(--main);border-color:var(--main);color:#fff}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="lbl">團名</div>
-  <div class="tours" id="tours"></div>
-
-  <div class="lbl">抽哪一組</div>
-  <div class="tabs" id="tabs"></div>
+  <div class="top"><select class="pick" id="pick" aria-label="選擇名單"></select></div>
 
   <div class="stage" id="stage">
-    <div class="pin"></div>
+    <svg class="pin" viewBox="0 0 60 70" aria-hidden="true"><path d="M30 68 L6 14 A26 26 0 0 1 54 14 Z" fill="#ffc928" stroke="#12285c" stroke-width="5" stroke-linejoin="round"/><circle cx="30" cy="20" r="7" fill="#12285c"/></svg>
     <canvas id="wheel" width="1120" height="1120"></canvas>
     <div class="hub" id="hub">抽獎</div>
   </div>
@@ -88,7 +72,7 @@
   <div class="opt"><span>抽過刪除</span><button class="tog on" id="noRepeat">開</button></div>
 
   <div class="lbl">中獎紀錄</div>
-  <div class="hist" id="hist"></div>
+  <div id="hist"></div>
   <button class="copy" id="copyWin">複製得獎名單（貼到 LINE）</button>
 
   <button class="btn2" id="reload">更新名單</button>
@@ -106,6 +90,13 @@
   </div>
 </div>
 
+<div class="over" id="cfmBox" hidden>
+  <div class="box">
+    <div class="cq" id="cfmQ"></div>
+    <div class="two"><button id="cfmNo">取消</button><button class="yes" id="cfmYes">確定</button></div>
+  </div>
+</div>
+
 <div class="over" id="pinBox" hidden>
   <div class="box">
     <div class="t">請輸入 PIN（跟下雨通知一樣）</div>
@@ -118,8 +109,13 @@
 (function () {
   const API = 'https://script.google.com/macros/s/AKfycbwGL9LSy0zDw0fS83oVSOL-RSoce7PQUjJQgvs216_TqxmF3VEbNTH7yOlSiEV9mc6dWg/exec?lottery=1';
   const $ = id => document.getElementById(id);
-  const WD = '日一二三四五六';
-  const BLUES = ['#1f5fd6', '#3b7ff0', '#173f9e'], YELLOWS = ['#ffc928', '#ffdc6b', '#f5b400'];
+  /* 轉盤配色：深藍、亮黃、寶藍、奶油黃 四色輪流 */
+  const PAL = [
+    { bg: ['#1d4aa8', '#12306f'], fg: '#ffffff' },
+    { bg: ['#ffd84d', '#f5b400'], fg: '#12285c' },
+    { bg: ['#4b8bf5', '#2a63d4'], fg: '#ffffff' },
+    { bg: ['#fff6d6', '#ffe7a0'], fg: '#12285c' }
+  ];
   const S = { pin: '', tours: [], data: null, tab: 'adults', angle: 0, spinning: false };
 
   const store = {
@@ -136,9 +132,19 @@
     return j;
   }
   function say(t) { $('msg').textContent = t || ''; }
-  function parse(s) { const p = String(s || '').split('-').map(Number); return new Date(p[0], (p[1] || 1) - 1, p[2] || 1); }
-  function md(d) { return (d.getMonth() + 1) + '/' + d.getDate() + '（' + WD[d.getDay()] + '）'; }
   function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+  function ymd(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+
+  /* ---------- 確認視窗（防誤觸） ---------- */
+  function askConfirm(q) {
+    return new Promise(res => {
+      $('cfmQ').textContent = q;
+      $('cfmBox').hidden = false;
+      const done = v => { $('cfmBox').hidden = true; $('cfmYes').onclick = null; $('cfmNo').onclick = null; res(v); };
+      $('cfmYes').onclick = () => done(true);
+      $('cfmNo').onclick = () => done(false);
+    });
+  }
 
   /* ---------- 名單（只有大人、小孩） ---------- */
   function lists() {
@@ -157,37 +163,54 @@
     return L.list.filter(n => !won.has(n));
   }
 
-  /* ---------- 恢復上一動作（防誤點） ---------- */
+  /* ---------- 恢復上一動作 ---------- */
   const UNDO = [];
   function pushUndo(u) { UNDO.push(u); if (UNDO.length > 30) UNDO.shift(); $('undo').disabled = false; }
-  function undo() {
-    if (S.spinning) return;
-    const u = UNDO.pop();
-    if (u) {
-      if (u.type === 'draw' || u.type === 'clear') store.set(u.key, u.hist);
-      else if (u.type === 'norep') store.set('lt_norep', u.val);
-      else if (u.type === 'sec') store.set('lt_sec', u.val);
-      else if (u.type === 'delete') {
-        const d = u.data;
-        api({ action: 'save', tour: d.tour, start: d.start, end: d.end, adults: d.adults, kids: d.kids, groups: d.groups || [] })
-          .then(() => init()).then(() => say('已恢復：' + u.label)).catch(e => say('恢復失敗：' + e.message));
-        $('undo').disabled = !UNDO.length;
-        return;
-      }
-      if (u.tourKey && (!S.data || S.data.key !== u.tourKey)) { loadTour(u.tourKey).catch(() => {}); }
-      else renderAll();
-      say(u.label ? '已恢復：' + u.label : '已恢復上一動作');
-    }
+  async function undo() {
+    if (S.spinning || !UNDO.length) return;
+    const u = UNDO[UNDO.length - 1];
+    if (!(await askConfirm('確定要恢復嗎？\n' + (u.label || '上一動作')))) return;
+    UNDO.pop();
     $('undo').disabled = !UNDO.length;
+    if (u.type === 'draw' || u.type === 'clear') store.set(u.key, u.hist);
+    else if (u.type === 'norep') store.set('lt_norep', u.val);
+    else if (u.type === 'sec') store.set('lt_sec', u.val);
+    else if (u.type === 'delete') {
+      const d = u.data;
+      try {
+        await api({ action: 'save', tour: d.tour, start: d.start, end: d.end, adults: d.adults, kids: d.kids, groups: d.groups || [] });
+        await init();
+        say('已恢復：' + u.label);
+      } catch (e) { say('恢復失敗：' + e.message); }
+      return;
+    }
+    if (u.tourKey && (!S.data || S.data.key !== u.tourKey)) { try { await loadTour(u.tourKey); } catch (e) {} }
+    else renderAll();
+    say('已恢復：' + (u.label || '上一動作'));
   }
 
   /* ---------- 畫轉盤 ---------- */
   function draw() {
-    const c = $('wheel'), g = c.getContext('2d'), W = c.width, R = W / 2 - 8;
+    const c = $('wheel'), g = c.getContext('2d'), W = c.width, C = W / 2;
+    const RO = C - 10, rim = RO * 0.085, R = RO - rim;
     const names = remaining();
     g.clearRect(0, 0, W, W);
+
+    /* 外圈：深藍邊框＋黃色燈泡 */
+    g.beginPath(); g.arc(C, C, RO, 0, Math.PI * 2);
+    const rg = g.createRadialGradient(C, C, R, C, C, RO);
+    rg.addColorStop(0, '#0d214f'); rg.addColorStop(0.5, '#1d4aa8'); rg.addColorStop(1, '#0d214f');
+    g.fillStyle = rg; g.fill();
+    const bulbs = 24;
+    for (let i = 0; i < bulbs; i++) {
+      const a = i / bulbs * Math.PI * 2 + S.angle;
+      const x = C + Math.cos(a) * (R + rim / 2), y = C + Math.sin(a) * (R + rim / 2);
+      g.beginPath(); g.arc(x, y, rim * 0.2, 0, Math.PI * 2);
+      g.fillStyle = i % 2 ? '#fff6d6' : '#ffc928'; g.fill();
+    }
+
     g.save();
-    g.translate(W / 2, W / 2);
+    g.translate(C, C);
     g.rotate(S.angle);
     if (!names.length) {
       g.beginPath(); g.arc(0, 0, R, 0, Math.PI * 2); g.fillStyle = '#dbe6f8'; g.fill();
@@ -197,28 +220,33 @@
     }
     const n = names.length, a = Math.PI * 2 / n;
     for (let i = 0; i < n; i++) {
-      g.beginPath();
-      g.moveTo(0, 0);
-      g.arc(0, 0, R, i * a - Math.PI / 2, (i + 1) * a - Math.PI / 2);
-      g.closePath();
-      let yellow = i % 2 === 1;
-      let col = yellow ? YELLOWS[((i - 1) / 2) % 3] : BLUES[(i / 2) % 3];
-      if (n % 2 === 1 && i === n - 1 && n > 1) { col = '#9cc2ff'; yellow = true; }
-      g.fillStyle = col;
-      g.fill();
-      g.lineWidth = 4; g.strokeStyle = '#fff'; g.stroke();
+      let p = PAL[i % 4];
+      /* 最後一格不要跟第一格同色 */
+      if (n > 1 && i === n - 1 && i % 4 === 0) p = PAL[2];
+      const s0 = i * a - Math.PI / 2, s1 = s0 + a;
+      const gr = g.createRadialGradient(0, 0, R * 0.15, 0, 0, R);
+      gr.addColorStop(0, p.bg[0]); gr.addColorStop(1, p.bg[1]);
+      g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, R, s0, s1); g.closePath();
+      g.fillStyle = gr; g.fill();
+      g.lineWidth = 3; g.strokeStyle = 'rgba(255,255,255,.85)'; g.stroke();
       g.save();
-      g.rotate(i * a + a / 2 - Math.PI / 2);
+      g.rotate(s0 + a / 2);
       g.textAlign = 'right';
       g.textBaseline = 'middle';
-      g.fillStyle = yellow ? '#12285c' : '#fff';
-      const fs = Math.max(26, Math.min(64, Math.floor(R * a * 0.62), Math.floor(R * 0.62 / Math.max(2, names[i].length) * 1.05)));
+      g.fillStyle = p.fg;
+      const fs = Math.max(26, Math.min(62, Math.floor(R * a * 0.6), Math.floor(R * 0.6 / Math.max(2, names[i].length) * 1.05)));
       g.font = '900 ' + fs + 'px "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif';
-      g.fillText(names[i], R - 26, 0);
+      if (p.fg === '#ffffff') { g.shadowColor = 'rgba(0,0,0,.35)'; g.shadowBlur = 6; g.shadowOffsetY = 2; }
+      g.fillText(names[i], R - 30, 0);
       g.restore();
     }
     g.restore();
-    g.beginPath(); g.arc(W / 2, W / 2, R, 0, Math.PI * 2); g.lineWidth = 10; g.strokeStyle = '#12285c'; g.stroke();
+
+    /* 光澤 */
+    const sh = g.createRadialGradient(C - R * 0.35, C - R * 0.45, R * 0.05, C, C, R);
+    sh.addColorStop(0, 'rgba(255,255,255,.28)'); sh.addColorStop(0.45, 'rgba(255,255,255,.06)'); sh.addColorStop(1, 'rgba(0,0,0,.12)');
+    g.beginPath(); g.arc(C, C, R, 0, Math.PI * 2); g.fillStyle = sh; g.fill();
+    g.beginPath(); g.arc(C, C, R, 0, Math.PI * 2); g.lineWidth = 6; g.strokeStyle = '#ffc928'; g.stroke();
     $('hub').textContent = '抽獎';
   }
 
@@ -260,16 +288,23 @@
   }
 
   /* ---------- 畫面 ---------- */
-  function renderHead() {
-    const d = S.data;
-    $('tours').innerHTML = S.tours.map(t => '<button class="tour' + (d && t.key === d.key ? ' on' : '') + '" data-tour="' + esc(t.key) + '">' + esc(t.tour || t.key) + '</button>').join('');
-    const L = lists();
-    if (!L.some(x => x.id === S.tab) && L[0]) S.tab = L[0].id;
-    const tn = d ? (d.tour || '') : '';
-    $('tabs').innerHTML = L.map(x => '<button class="tab' + (x.id === S.tab ? ' on' : '') + '" data-tab="' + x.id + '">' + esc(tn ? tn + ' ' + x.name : x.name) + '<small>' + x.list.length + '人</small></button>').join('');
+  function renderPick() {
+    const d = S.data, opts = [];
+    S.tours.forEach(t => {
+      const isCur = d && t.key === d.key;
+      const L = isCur ? lists() : [{ id: 'adults', name: '大人' }, { id: 'kids', name: '小孩' }];
+      L.forEach(x => {
+        const v = t.key + '|' + x.id;
+        const sel = isCur && x.id === S.tab;
+        opts.push('<option value="' + esc(v) + '"' + (sel ? ' selected' : '') + '>' + esc((t.tour || t.key) + ' ' + x.name + (isCur ? '（' + x.list.length + '人）' : '')) + '</option>');
+      });
+    });
+    $('pick').innerHTML = opts.join('') || '<option>還沒有名單</option>';
   }
   function renderAll() {
-    renderHead();
+    const L0 = lists();
+    if (!L0.some(x => x.id === S.tab) && L0[0]) S.tab = L0[0].id;
+    renderPick();
     const r = remaining(), L = curList();
     $('left').textContent = L ? L.name + '還有 ' + r.length + ' 人可以抽（共 ' + L.list.length + ' 人）' : '';
     const nr = store.get('lt_norep', true);
@@ -292,7 +327,6 @@
     say('名單更新時間：' + (j.data.updated || ''));
     renderAll();
   }
-  function ymd(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
   function pickDefault() {
     const last = store.get('lt_last', '');
     if (S.tours.some(t => t.key === last)) return last;
@@ -327,12 +361,26 @@
   $('hub').onclick = spin;
   $('undo').onclick = undo;
   $('winOk').onclick = () => { $('winBox').hidden = true; renderAll(); };
-  $('tours').onclick = e => { const b = e.target.closest('[data-tour]'); if (b && !S.spinning && (!S.data || b.dataset.tour !== S.data.key)) { S.angle = 0; loadTour(b.dataset.tour).catch(err => say('讀取失敗：' + err.message)); } };
-  $('tabs').onclick = e => { const b = e.target.closest('[data-tab]'); if (b && !S.spinning) { S.tab = b.dataset.tab; S.angle = 0; renderAll(); } };
-  $('noRepeat').onclick = () => { const v = store.get('lt_norep', true); pushUndo({ type: 'norep', val: v, label: '抽過刪除 ' + (v ? '開' : '關') }); store.set('lt_norep', !v); renderAll(); };
-  $('reload').onclick = () => init();
-  $('clear').onclick = () => { if (!S.data) return; if (confirm('確定清除「' + (S.data.tour || '') + '」的中獎紀錄？')) { pushUndo({ type: 'clear', key: histKey(), hist: hist(), tourKey: S.data.key, label: '清除的中獎紀錄' }); store.set(histKey(), []); renderAll(); } };
-  $('secs').onclick = e => { const b = e.target.closest('[data-sec]'); if (!b) return; const v = store.get('lt_sec', 3); const nv = Number(b.dataset.sec); if (v === nv) return; pushUndo({ type: 'sec', val: v, label: '轉盤 ' + v + ' 秒' }); store.set('lt_sec', nv); renderAll(); };
+  $('pick').onchange = () => {
+    if (S.spinning) { renderPick(); return; }
+    const p = $('pick').value.split('|');
+    if (p.length < 2) return;
+    S.tab = p[1]; S.angle = 0;
+    if (!S.data || p[0] !== S.data.key) loadTour(p[0]).catch(e => say('讀取失敗：' + e.message));
+    else renderAll();
+  };
+  $('secs').onclick = e => {
+    const b = e.target.closest('[data-sec]'); if (!b) return;
+    const v = store.get('lt_sec', 3), nv = Number(b.dataset.sec);
+    if (v === nv) return;
+    pushUndo({ type: 'sec', val: v, label: '轉盤改回 ' + v + ' 秒' });
+    store.set('lt_sec', nv); renderAll();
+  };
+  $('noRepeat').onclick = () => {
+    const v = store.get('lt_norep', true);
+    pushUndo({ type: 'norep', val: v, label: '抽過刪除改回「' + (v ? '開' : '關') + '」' });
+    store.set('lt_norep', !v); renderAll();
+  };
   $('copyWin').onclick = async () => {
     const h = hist().slice().reverse();
     if (!h.length) { say('還沒有人中獎'); return; }
@@ -356,13 +404,20 @@
     $('copyWin').textContent = ok ? '已複製，可以貼到 LINE' : '複製失敗，請再按一次';
     setTimeout(() => { $('copyWin').textContent = '複製得獎名單（貼到 LINE）'; }, 2000);
   };
+  $('reload').onclick = () => init();
+  $('clear').onclick = async () => {
+    if (!S.data) return;
+    if (!(await askConfirm('確定清除「' + (S.data.tour || '') + '」的中獎紀錄？'))) return;
+    pushUndo({ type: 'clear', key: histKey(), hist: hist(), tourKey: S.data.key, label: '還原清除的中獎紀錄' });
+    store.set(histKey(), []); renderAll();
+  };
   $('delTour').onclick = async () => {
     if (!S.data || S.spinning) return;
     const d = S.data;
-    if (!confirm('確定刪除「' + (d.tour || '') + '」的名單？\n（刪錯可以按「恢復上一動作」救回來）')) return;
+    if (!(await askConfirm('確定刪除「' + (d.tour || '') + '」的名單？\n刪錯可以按「恢復上一動作」救回來'))) return;
     try {
       await api({ action: 'delete', key: d.key });
-      pushUndo({ type: 'delete', data: JSON.parse(JSON.stringify(d)), label: '刪除的「' + (d.tour || '') + '」名單' });
+      pushUndo({ type: 'delete', data: JSON.parse(JSON.stringify(d)), label: '救回「' + (d.tour || '') + '」的名單' });
       try { localStorage.removeItem('lt_cache_' + d.key); } catch (e) {}
       if (store.get('lt_last', '') === d.key) store.set('lt_last', '');
       S.data = null;
