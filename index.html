@@ -129,9 +129,7 @@
 <div class="over" id="edBox" hidden>
   <div class="box ed">
     <div class="t big" id="edTitle">新增名單</div>
-    <label class="fl">出團日期</label>
-    <input id="edDate" type="date">
-    <label class="fl">團名（可以不填）</label>
+    <label class="fl">團名</label>
     <input id="edName" type="text" placeholder="例如：大阪環球">
     <div class="nmcols">
       <div><label class="fl">大人</label><textarea id="edAdults" rows="10"></textarea></div>
@@ -269,6 +267,7 @@
     else if (u.type === 'sec') store.set('lt_sec', u.val);
     else if (u.type === 'unsave') {
       try {
+        if (u.drop) await api({ action: 'delete', key: u.drop });
         if (u.prev) await api({ action: 'save', tour: u.prev.tour, start: u.prev.start, end: u.prev.end, adults: u.prev.adults, kids: u.prev.kids, groups: u.prev.groups || [] });
         else await api({ action: 'delete', key: u.key });
         await init();
@@ -574,7 +573,6 @@
   function openEditor(d) {
     ED = d ? JSON.parse(JSON.stringify(d)) : null;
     $('edTitle').textContent = d ? '修改名單' : '新增名單';
-    $('edDate').value = d ? (d.start || '') : '';
     $('edName').value = d ? String(d.tour || '').replace(/^\d{1,2}\/\d{1,2}\s*/, '') : '';
     $('edAdults').value = d ? (d.adults || []).join('\n') : '';
     $('edKids').value = d ? (d.kids || []).join('\n') : '';
@@ -621,26 +619,30 @@
   };
   $('edNo').onclick = () => { $('edBox').hidden = true; };
   $('edYes').onclick = async () => {
-    const date = $('edDate').value;
     const adults = names($('edAdults').value), kids = names($('edKids').value);
-    if (!date) { await askConfirm('請先選出團日期'); return; }
+    const nm = $('edName').value.trim();
+    const old = ED && ED.key ? ED : null;
+    const date = old ? (old.start || '') : '';
+    if (!date && !nm) { await askConfirm('請輸入團名'); return; }
     if (!adults.length && !kids.length) { await askConfirm('請至少輸入一個名字'); return; }
     const p = date.split('-');
-    const nm = $('edName').value.trim();
-    const tour = Number(p[1]) + '/' + Number(p[2]) + (nm ? nm : '');
-    const key = date.replace(/-/g, '');
-    const old = ED && ED.key ? ED : null;
-    const clash = S.tours.find(t => t.key === key);
-    if (clash && (!old || old.key !== key)) {
-      if (!(await askConfirm('「' + (clash.tour || key) + '」這個日期已經有名單，要用新的名單覆蓋嗎？'))) return;
+    const tour = (p.length === 3 ? Number(p[1]) + '/' + Number(p[2]) : '') + nm;
+    let key = date ? date.replace(/-/g, '') : '';
+    const clash = S.tours.find(t => key ? t.key === key : (!t.start && t.tour === tour));
+    if (clash) key = clash.key;
+    if (clash && (!old || old.key !== clash.key)) {
+      if (!(await askConfirm('「' + (clash.tour || key) + '」已經有名單，要用新的名單覆蓋嗎？'))) return;
     }
     let prev = null;
     try { if (clash) prev = await getTourData(key); } catch (e) {}
     const btn = $('edYes'); btn.disabled = true; btn.textContent = '儲存中…';
     try {
-      await api({ action: 'save', tour: tour, start: date, end: (old && old.key === key && old.end) || '', adults: adults, kids: kids, groups: [] });
+      const r = await api({ action: 'save', tour: tour, start: date, end: (old && old.end) || '', adults: adults, kids: kids, groups: [] });
+      if (r && r.key) key = r.key;
       if (old && old.key !== key) await api({ action: 'delete', key: old.key });
-      pushUndo({ type: 'unsave', key: key, prev: prev, label: (old ? '取消修改「' : '取消新增「') + tour + '」' });
+      const renamed = !!(old && old.key !== key);
+      if (renamed && !prev) prev = old;
+      pushUndo({ type: 'unsave', key: key, prev: prev, drop: renamed ? key : '', label: (old ? '取消修改「' : '取消新增「') + tour + '」' });
       $('edBox').hidden = true;
       store.set('lt_last', key);
       S.data = null;
