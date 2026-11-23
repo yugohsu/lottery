@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="抽獎轉盤">
-<meta name="theme-color" content="#fff7ec">
+<meta name="theme-color" content="#eaf2ff">
 <title>抽獎轉盤</title>
 <style>
-  :root{--bg:#fff7ec;--card:#fff;--ink:#2b2118;--muted:#7a6a58;--line:#eadcc8;--main:#e8572b;--main2:#ffb22e;--ok:#06a65a}
+  :root{--bg:#eaf2ff;--card:#fff;--ink:#12285c;--muted:#51648f;--line:#c9d9f5;--main:#1f5fd6;--main2:#ffc928;--ok:#1f5fd6}
   *{box-sizing:border-box}
   html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;-webkit-text-size-adjust:100%}
   body{padding:max(14px,env(safe-area-inset-top)) 14px calc(30px + env(safe-area-inset-bottom))}
@@ -33,7 +33,7 @@
   canvas{width:100%;height:100%;display:block}
   .pin{position:absolute;left:50%;top:-6px;transform:translateX(-50%);width:0;height:0;border-left:20px solid transparent;border-right:20px solid transparent;border-top:40px solid var(--ink);filter:drop-shadow(0 2px 2px rgba(0,0,0,.25));z-index:2}
   .hub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:22%;aspect-ratio:1;border-radius:50%;background:#fff;border:6px solid var(--ink);display:flex;align-items:center;justify-content:center;font-size:clamp(16px,4vw,24px);font-weight:900;text-align:center;line-height:1.1}
-  .go{display:block;width:100%;max-width:560px;margin:10px auto 0;border:0;border-radius:22px;background:var(--main);color:#fff;font-size:34px;font-weight:900;padding:22px 8px;box-shadow:0 6px 0 #b63c19}
+  .go{display:block;width:100%;max-width:560px;margin:10px auto 0;border:0;border-radius:22px;background:var(--main2);color:var(--ink);font-size:34px;font-weight:900;padding:22px 8px;box-shadow:0 6px 0 #d19f00}
   .go:disabled{opacity:.55}
   .left{text-align:center;font-size:18px;font-weight:800;color:var(--muted);margin-top:10px}
   .opt{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;padding:14px;border:2px solid var(--line);border-radius:16px;background:var(--card);font-size:19px;font-weight:900}
@@ -48,12 +48,17 @@
   .over[hidden]{display:none}
   .box{background:#fff;border-radius:28px;padding:26px 22px;text-align:center;width:min(92vw,520px)}
   .box .t{font-size:22px;font-weight:900;color:var(--muted)}
-  .box .w{font-size:clamp(48px,14vw,84px);font-weight:900;color:var(--main);margin:10px 0 18px;line-height:1.15;word-break:break-all}
+  .box .w{font-size:clamp(48px,14vw,84px);font-weight:900;color:var(--main);background:#fff6cf;border-radius:20px;padding:8px 6px;margin:10px 0 18px;line-height:1.15;word-break:break-all}
   .box .ok{width:100%;border:0;border-radius:18px;background:var(--ink);color:#fff;font-size:26px;font-weight:900;padding:16px}
   .box input{width:100%;font:inherit;font-size:28px;font-weight:900;text-align:center;padding:12px;border-radius:14px;border:2px solid var(--line);margin:12px 0}
   .tours{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
   .tour{font-size:20px;font-weight:900;min-height:60px;padding:6px 10px;border-radius:16px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
   .tour.on{background:var(--main);border-color:var(--main);color:#fff}
+  .secs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+  .sec{min-height:58px;border-radius:16px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-size:21px;font-weight:900}
+  .sec.on{background:var(--main2);border-color:var(--main2)}
+  .copy{display:block;width:100%;margin-top:10px;min-height:60px;border-radius:16px;border:0;background:var(--main);color:#fff;font-size:22px;font-weight:900}
+  .del{color:#c0392b;border-color:#f0b7b0}
   .undo{display:block;width:100%;max-width:560px;margin:12px auto 0;min-height:58px;border-radius:18px;border:3px solid var(--ink);background:var(--card);color:var(--ink);font-size:22px;font-weight:900}
   .undo:disabled{opacity:.35}
   .box .t.big{font-size:40px;color:var(--ink);text-align:center}
@@ -77,13 +82,18 @@
   <button class="undo" id="undo" disabled>恢復上一動作</button>
   <div class="left" id="left"></div>
 
-  <div class="opt"><span>抽過的人不再抽</span><button class="tog on" id="noRepeat">開</button></div>
+  <div class="lbl">轉盤轉幾秒</div>
+  <div class="secs" id="secs"><button class="sec" data-sec="1">1 秒</button><button class="sec" data-sec="3">3 秒</button></div>
+
+  <div class="opt"><span>抽過刪除</span><button class="tog on" id="noRepeat">開</button></div>
 
   <div class="lbl">中獎紀錄</div>
   <div class="hist" id="hist"></div>
+  <button class="copy" id="copyWin">複製得獎名單（貼到 LINE）</button>
 
   <button class="btn2" id="reload">更新名單</button>
   <button class="btn2" id="clear">清除這一團的中獎紀錄</button>
+  <button class="btn2 del" id="delTour">刪除這一團的名單（用完了）</button>
   <button class="btn2" id="pinBtn">更換 PIN</button>
   <div class="msg" id="msg"></div>
 </div>
@@ -109,7 +119,7 @@
   const API = 'https://script.google.com/macros/s/AKfycbwGL9LSy0zDw0fS83oVSOL-RSoce7PQUjJQgvs216_TqxmF3VEbNTH7yOlSiEV9mc6dWg/exec?lottery=1';
   const $ = id => document.getElementById(id);
   const WD = '日一二三四五六';
-  const COLORS = ['#e8572b', '#ffb22e', '#2a9d8f', '#4f6bd8', '#d94f8a', '#7cb342', '#8e5bd6', '#f08a24'];
+  const BLUES = ['#1f5fd6', '#3b7ff0', '#173f9e'], YELLOWS = ['#ffc928', '#ffdc6b', '#f5b400'];
   const S = { pin: '', tours: [], data: null, tab: 'adults', angle: 0, spinning: false };
 
   const store = {
@@ -156,6 +166,14 @@
     if (u) {
       if (u.type === 'draw' || u.type === 'clear') store.set(u.key, u.hist);
       else if (u.type === 'norep') store.set('lt_norep', u.val);
+      else if (u.type === 'sec') store.set('lt_sec', u.val);
+      else if (u.type === 'delete') {
+        const d = u.data;
+        api({ action: 'save', tour: d.tour, start: d.start, end: d.end, adults: d.adults, kids: d.kids, groups: d.groups || [] })
+          .then(() => init()).then(() => say('已恢復：' + u.label)).catch(e => say('恢復失敗：' + e.message));
+        $('undo').disabled = !UNDO.length;
+        return;
+      }
       if (u.tourKey && (!S.data || S.data.key !== u.tourKey)) { loadTour(u.tourKey).catch(() => {}); }
       else renderAll();
       say(u.label ? '已恢復：' + u.label : '已恢復上一動作');
@@ -172,7 +190,7 @@
     g.translate(W / 2, W / 2);
     g.rotate(S.angle);
     if (!names.length) {
-      g.beginPath(); g.arc(0, 0, R, 0, Math.PI * 2); g.fillStyle = '#efe3d2'; g.fill();
+      g.beginPath(); g.arc(0, 0, R, 0, Math.PI * 2); g.fillStyle = '#dbe6f8'; g.fill();
       g.restore();
       $('hub').textContent = '抽完了';
       return;
@@ -183,8 +201,9 @@
       g.moveTo(0, 0);
       g.arc(0, 0, R, i * a - Math.PI / 2, (i + 1) * a - Math.PI / 2);
       g.closePath();
-      let col = COLORS[i % COLORS.length];
-      if (n % COLORS.length === 1 && i === n - 1) col = COLORS[2];
+      let yellow = i % 2 === 1;
+      let col = yellow ? YELLOWS[((i - 1) / 2) % 3] : BLUES[(i / 2) % 3];
+      if (n % 2 === 1 && i === n - 1 && n > 1) { col = '#9cc2ff'; yellow = true; }
       g.fillStyle = col;
       g.fill();
       g.lineWidth = 4; g.strokeStyle = '#fff'; g.stroke();
@@ -192,14 +211,14 @@
       g.rotate(i * a + a / 2 - Math.PI / 2);
       g.textAlign = 'right';
       g.textBaseline = 'middle';
-      g.fillStyle = '#fff';
+      g.fillStyle = yellow ? '#12285c' : '#fff';
       const fs = Math.max(26, Math.min(64, Math.floor(R * a * 0.62), Math.floor(R * 0.62 / Math.max(2, names[i].length) * 1.05)));
       g.font = '900 ' + fs + 'px "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif';
       g.fillText(names[i], R - 26, 0);
       g.restore();
     }
     g.restore();
-    g.beginPath(); g.arc(W / 2, W / 2, R, 0, Math.PI * 2); g.lineWidth = 10; g.strokeStyle = '#2b2118'; g.stroke();
+    g.beginPath(); g.arc(W / 2, W / 2, R, 0, Math.PI * 2); g.lineWidth = 10; g.strokeStyle = '#12285c'; g.stroke();
     $('hub').textContent = '抽獎';
   }
 
@@ -213,8 +232,9 @@
     const base = -(pick * a + a / 2) + jitter;
     const cur = ((S.angle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
     let target = S.angle - cur + base;
-    while (target < S.angle + Math.PI * 2 * 6) target += Math.PI * 2;
-    const from = S.angle, dur = 5200, t0 = performance.now();
+    const sec = store.get('lt_sec', 3) === 1 ? 1 : 3;
+    while (target < S.angle + Math.PI * 2 * (sec === 1 ? 2 : 5)) target += Math.PI * 2;
+    const from = S.angle, dur = sec * 1000, t0 = performance.now();
     S.spinning = true;
     $('go').disabled = true;
     $('undo').disabled = true;
@@ -255,6 +275,9 @@
     const nr = store.get('lt_norep', true);
     $('noRepeat').classList.toggle('on', nr);
     $('noRepeat').textContent = nr ? '開' : '關';
+    const sec = store.get('lt_sec', 3) === 1 ? 1 : 3;
+    Array.from(document.querySelectorAll('[data-sec]')).forEach(b => b.classList.toggle('on', Number(b.dataset.sec) === sec));
+    $('delTour').style.display = S.data ? '' : 'none';
     const h = hist();
     $('hist').innerHTML = h.length ? h.map(x => '<div class="h"><span>' + esc(x.who) + '</span><small>' + esc(x.list) + '</small></div>').join('') : '<div class="empty">還沒有人中獎</div>';
     draw();
@@ -306,9 +329,47 @@
   $('winOk').onclick = () => { $('winBox').hidden = true; renderAll(); };
   $('tours').onclick = e => { const b = e.target.closest('[data-tour]'); if (b && !S.spinning && (!S.data || b.dataset.tour !== S.data.key)) { S.angle = 0; loadTour(b.dataset.tour).catch(err => say('讀取失敗：' + err.message)); } };
   $('tabs').onclick = e => { const b = e.target.closest('[data-tab]'); if (b && !S.spinning) { S.tab = b.dataset.tab; S.angle = 0; renderAll(); } };
-  $('noRepeat').onclick = () => { const v = store.get('lt_norep', true); pushUndo({ type: 'norep', val: v, label: '抽過的人不再抽 ' + (v ? '開' : '關') }); store.set('lt_norep', !v); renderAll(); };
+  $('noRepeat').onclick = () => { const v = store.get('lt_norep', true); pushUndo({ type: 'norep', val: v, label: '抽過刪除 ' + (v ? '開' : '關') }); store.set('lt_norep', !v); renderAll(); };
   $('reload').onclick = () => init();
   $('clear').onclick = () => { if (!S.data) return; if (confirm('確定清除「' + (S.data.tour || '') + '」的中獎紀錄？')) { pushUndo({ type: 'clear', key: histKey(), hist: hist(), tourKey: S.data.key, label: '清除的中獎紀錄' }); store.set(histKey(), []); renderAll(); } };
+  $('secs').onclick = e => { const b = e.target.closest('[data-sec]'); if (!b) return; const v = store.get('lt_sec', 3); const nv = Number(b.dataset.sec); if (v === nv) return; pushUndo({ type: 'sec', val: v, label: '轉盤 ' + v + ' 秒' }); store.set('lt_sec', nv); renderAll(); };
+  $('copyWin').onclick = async () => {
+    const h = hist().slice().reverse();
+    if (!h.length) { say('還沒有人中獎'); return; }
+    const lines = [(S.data && S.data.tour ? S.data.tour + ' ' : '') + '抽獎得獎名單'];
+    ['大人', '小孩'].forEach(name => {
+      const w = h.filter(x => x.list === name);
+      if (!w.length) return;
+      lines.push('', name);
+      w.forEach((x, i) => lines.push((i + 1) + '. ' + x.who));
+    });
+    const text = lines.join('\n');
+    let ok = false;
+    try { await navigator.clipboard.writeText(text); ok = true; } catch (e) {}
+    if (!ok) {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      try { ok = document.execCommand('copy'); } catch (e) {}
+      ta.remove();
+    }
+    $('copyWin').textContent = ok ? '已複製，可以貼到 LINE' : '複製失敗，請再按一次';
+    setTimeout(() => { $('copyWin').textContent = '複製得獎名單（貼到 LINE）'; }, 2000);
+  };
+  $('delTour').onclick = async () => {
+    if (!S.data || S.spinning) return;
+    const d = S.data;
+    if (!confirm('確定刪除「' + (d.tour || '') + '」的名單？\n（刪錯可以按「恢復上一動作」救回來）')) return;
+    try {
+      await api({ action: 'delete', key: d.key });
+      pushUndo({ type: 'delete', data: JSON.parse(JSON.stringify(d)), label: '刪除的「' + (d.tour || '') + '」名單' });
+      try { localStorage.removeItem('lt_cache_' + d.key); } catch (e) {}
+      if (store.get('lt_last', '') === d.key) store.set('lt_last', '');
+      S.data = null;
+      await init();
+      say('已刪除「' + (d.tour || '') + '」的名單');
+    } catch (e) { say('刪除失敗：' + e.message); }
+  };
   $('pinBtn').onclick = askPin;
   $('pinOk').onclick = () => { S.pin = $('pinIn').value.trim(); store.set('lt_pin', S.pin); $('pinBox').hidden = true; init(); };
   $('pinIn').addEventListener('keydown', e => { if (e.key === 'Enter') $('pinOk').click(); });
