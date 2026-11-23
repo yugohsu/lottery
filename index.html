@@ -28,8 +28,10 @@
   .pclose{min-height:48px;padding:0 20px;border-radius:14px;border:0;background:var(--main2);color:var(--ink);font-size:20px;font-weight:900}
   .pick{appearance:none;-webkit-appearance:none;font-size:20px;font-weight:900;color:var(--ink);height:52px;padding:0 40px 0 14px;line-height:1.2;border-radius:12px;border:2px solid var(--line);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10'%3E%3Cpath d='M1 1l7 7 7-7' fill='none' stroke='%2312285c' stroke-width='3'/%3E%3C/svg%3E") no-repeat right 14px center;text-overflow:ellipsis}
   .first{min-height:calc(100vh - max(6px,env(safe-area-inset-top)) - 14px);min-height:calc(100svh - max(6px,env(safe-area-inset-top)) - 14px - env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px}
-  .stage{position:relative;width:max(220px,min(calc(100vw - 12px),620px,calc(100vh - 290px)));width:max(220px,min(calc(100vw - 12px),620px,calc(100svh - 290px - env(safe-area-inset-top) - env(safe-area-inset-bottom))));aspect-ratio:1;margin:auto;flex:none}
+  .stage{position:relative;width:max(220px,min(calc(100vw - 12px),620px,calc(100vh - 350px)));width:max(220px,min(calc(100vw - 12px),620px,calc(100svh - 350px - env(safe-area-inset-top) - env(safe-area-inset-bottom))));aspect-ratio:1;margin:auto;flex:none}
   .ctrl{padding:0 6px 6px}
+  .quick{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:560px;margin:10px auto 0}
+  .quick button{min-height:48px;border-radius:14px;border:2px solid var(--line);background:transparent;color:#fff;font-size:19px;font-weight:900}
   canvas{width:100%;height:100%;display:block;filter:drop-shadow(0 10px 24px rgba(0,0,0,.45))}
   .pin{position:absolute;left:50%;top:-10px;transform:translateX(-50%);width:13%;z-index:2;filter:drop-shadow(0 3px 3px rgba(0,0,0,.3))}
   .hub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:21%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff4b8,#ffc928 55%,#e9a800);border:6px solid var(--ink);box-shadow:0 4px 10px rgba(0,0,0,.25),inset 0 -4px 0 rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;font-size:clamp(16px,4vw,24px);font-weight:900;color:var(--ink);text-align:center;line-height:1.1;cursor:pointer}
@@ -92,6 +94,7 @@
   <button class="go" id="go">開始抽獎</button>
   <button class="undo" id="undo" disabled>恢復上一動作</button>
   <div class="left" id="left"></div>
+  <div class="quick"><button id="qAdd">＋ 加人</button><button id="qEdit">修改名單</button></div>
   </div>
   </section>
 
@@ -131,6 +134,15 @@
     <label class="fl">小孩（一行一個名字）</label>
     <textarea id="edKids" rows="6"></textarea>
     <div class="two"><button id="edNo">取消</button><button class="yes" id="edYes">儲存</button></div>
+  </div>
+</div>
+
+<div class="over" id="qaBox" hidden>
+  <div class="box ed">
+    <div class="t big" id="qaTitle">加人</div>
+    <label class="fl">名字（可以一次加好幾個，一行一個）</label>
+    <textarea id="qaNames" rows="4"></textarea>
+    <div class="two"><button id="qaNo">取消</button><button class="yes" id="qaYes">加入</button></div>
   </div>
 </div>
 
@@ -568,6 +580,40 @@
     return String(v || '').split(/[\n\r,，、;；\t]+|\s{2,}|\s+/).map(x => x.trim()).filter(x => x && !seen.has(x) && seen.add(x));
   }
   $('addList').onclick = () => openEditor(null);
+  $('qEdit').onclick = () => { if (S.data) openEditor(S.data); else openEditor(null); };
+  $('qAdd').onclick = () => {
+    const L = curList();
+    if (!S.data) { openEditor(null); return; }
+    const nm = (L && L.name) || (S.tab === 'kids' ? '小孩' : '大人');
+    $('qaTitle').textContent = '加到「' + (S.data.tour || '') + ' ' + nm + '」';
+    $('qaNames').value = '';
+    $('qaBox').hidden = false;
+    setTimeout(() => $('qaNames').focus(), 50);
+  };
+  $('qaNo').onclick = () => { $('qaBox').hidden = true; };
+  $('qaYes').onclick = async () => {
+    if (!S.data) return;
+    const add = names($('qaNames').value);
+    if (!add.length) { $('qaBox').hidden = true; return; }
+    const d = S.data, field = (S.tab === 'kids') ? 'kids' : 'adults';
+    const prev = JSON.parse(JSON.stringify(d));
+    const list = (d[field] || []).slice();
+    const dup = add.filter(n => list.indexOf(n) >= 0);
+    add.forEach(n => { if (list.indexOf(n) < 0) list.push(n); });
+    const nd = Object.assign({}, d, { [field]: list });
+    const btn = $('qaYes'); btn.disabled = true; btn.textContent = '加入中…';
+    try {
+      await api({ action: 'save', tour: nd.tour, start: nd.start, end: nd.end || '', adults: nd.adults || [], kids: nd.kids || [], groups: nd.groups || [] });
+      pushUndo({ type: 'unsave', key: d.key, prev: prev, label: '取消加入 ' + add.join('、') });
+      $('qaBox').hidden = true;
+      S.data = Object.assign({}, nd, { updated: d.updated });
+      store.set('lt_cache_' + d.key, S.data);
+      renderAll();
+      say('已加入：' + add.join('、') + (dup.length ? '（' + dup.join('、') + ' 原本就有）' : ''));
+      init();
+    } catch (e) { await askConfirm('加入失敗：' + e.message); }
+    btn.disabled = false; btn.textContent = '加入';
+  };
   $('edNo').onclick = () => { $('edBox').hidden = true; };
   $('edYes').onclick = async () => {
     const date = $('edDate').value;
