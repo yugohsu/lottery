@@ -16,8 +16,10 @@
   body{padding:max(6px,env(safe-area-inset-top)) 8px calc(14px + env(safe-area-inset-bottom))}
   .wrap{max-width:760px;margin:0 auto}
   button,select{font:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-  .top{display:grid;grid-template-columns:minmax(0,1fr) 52px;align-items:center;gap:8px}
-  .top .pick{width:100%}
+  .top{display:grid;grid-template-columns:52px minmax(0,1fr) 52px;align-items:center;gap:8px}
+  .top .pick{width:100%;text-align:center;text-align-last:center;padding-left:40px}
+  .gear.busy svg{animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
   .gear{width:52px;height:52px;border-radius:12px;border:2px solid var(--line);background:#fff;color:var(--ink);display:flex;align-items:center;justify-content:center;padding:0}
   .sheet{align-items:flex-end;padding:0}
   .panel{background:var(--bg);width:100%;max-width:760px;max-height:88vh;overflow-y:auto;border-radius:24px 24px 0 0;padding:16px 16px calc(24px + env(safe-area-inset-bottom))}
@@ -69,7 +71,7 @@
 <body>
 <div class="wrap">
   <section class="first">
-  <div class="top"><select class="pick" id="pick" aria-label="選擇名單"></select><button class="gear" id="gearBtn" aria-label="設定"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div>
+  <div class="top"><button class="gear" id="refBtn" aria-label="更新名單"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button><select class="pick" id="pick" aria-label="選擇名單"></select><button class="gear" id="gearBtn" aria-label="設定"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div>
 
   <div class="stage" id="stage">
     <svg class="pin" viewBox="0 0 60 70" aria-hidden="true"><path d="M30 68 L6 14 A26 26 0 0 1 54 14 Z" fill="#ffc928" stroke="#12285c" stroke-width="5" stroke-linejoin="round"/><circle cx="30" cy="20" r="7" fill="#12285c"/></svg>
@@ -324,7 +326,9 @@
       L.forEach(x => {
         const v = t.key + '|' + x.id;
         const sel = isCur && x.id === S.tab;
-        opts.push('<option value="' + esc(v) + '"' + (sel ? ' selected' : '') + '>' + esc((t.tour || t.key) + ' ' + x.name + (isCur ? '（' + x.list.length + '人）' : '')) + '</option>');
+        const st = String(t.start || '').split('-');
+        const dt = st.length === 3 ? Number(st[1]) + '/' + Number(st[2]) : (t.tour || t.key);
+        opts.push('<option value="' + esc(v) + '"' + (sel ? ' selected' : '') + '>' + esc(dt + ' ' + x.name) + '</option>');
       });
     });
     $('pick').innerHTML = opts.join('') || '<option>還沒有名單</option>';
@@ -478,6 +482,11 @@
   };
   $('pinBtn').onclick = () => { $('setBox').hidden = true; askPin(); };
   $('gearBtn').onclick = () => { $('setBox').hidden = false; };
+  $('refBtn').onclick = async () => {
+    if (S.spinning || $('refBtn').classList.contains('busy')) return;
+    $('refBtn').classList.add('busy');
+    try { await init(); } finally { $('refBtn').classList.remove('busy'); }
+  };
   $('setClose').onclick = () => { $('setBox').hidden = true; };
   $('setBox').addEventListener('click', e => { if (e.target === $('setBox')) $('setBox').hidden = true; });
   $('pinOk').onclick = () => { S.pin = $('pinIn').value.trim(); store.set('lt_pin', S.pin); $('pinBox').hidden = true; init(); };
