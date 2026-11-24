@@ -442,19 +442,31 @@
   }
 
   async function loadTour(key) {
-    say('讀取名單中…');
-    try {
-      const j = await api({ action: 'get', key: key });
-      store.set('lt_cache_' + key, j.data);
-      if (S.spinning) return;
-      S.data = j.data;
-      say('名單更新時間：' + (j.data.updated || '') + '（已存在這台，沒網路也能抽）');
-    } catch (e) {
-      const c = store.get('lt_cache_' + key, null);
-      if (!c || /PIN|pin|密碼/.test(e.message)) throw e;
+    /* 這台已經存過這團：馬上顯示，背景再同步最新的 */
+    const c = store.get('lt_cache_' + key, null);
+    if (c) {
       S.data = c;
-      say('沒有網路，使用存好的名單（' + (c.updated || '') + '）');
+      store.set('lt_last', key);
+      renderAll();
+      say('同步名單中…');
+      $('refBtn').classList.add('busy');
+      try {
+        const j = await api({ action: 'get', key: key });
+        const changed = JSON.stringify(j.data) !== JSON.stringify(c);
+        store.set('lt_cache_' + key, j.data);
+        if (changed && !S.spinning && S.data && S.data.key === key) { S.data = j.data; renderAll(); }
+        say('名單更新時間：' + (j.data.updated || '') + '（已存在這台，沒網路也能抽）');
+      } catch (e) {
+        say('沒有網路，使用存好的名單（' + (c.updated || '') + '）');
+      } finally { $('refBtn').classList.remove('busy'); }
+      return;
     }
+    say('讀取名單中…');
+    const j = await api({ action: 'get', key: key });
+    store.set('lt_cache_' + key, j.data);
+    if (S.spinning) return;
+    S.data = j.data;
+    say('名單更新時間：' + (j.data.updated || '') + '（已存在這台，沒網路也能抽）');
     store.set('lt_last', key);
     renderAll();
   }
