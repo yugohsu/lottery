@@ -51,6 +51,9 @@
   .h small{font-size:15px;color:var(--muted);font-weight:800}
   .empty{text-align:center;font-size:20px;font-weight:900;color:var(--onbg);padding:24px 0}
   .btn2.danger{background:#d93636;border-color:#d93636;color:#fff}
+  .offst{margin-top:14px;padding:12px;border-radius:14px;background:var(--card);color:var(--ink);font-size:19px;font-weight:900;text-align:center}
+  .offst.ok{background:#1f9d55;color:#fff}
+  .offst.no{background:#d93636;color:#fff}
   .copy{display:block;width:100%;margin-top:10px;min-height:60px;border-radius:16px;border:0;background:var(--main);color:#fff;font-size:22px;font-weight:900}
   .btn2{display:block;width:100%;margin-top:10px;min-height:56px;border-radius:14px;border:2px solid var(--line);background:var(--card);font-size:20px;font-weight:900;color:var(--ink)}
   .del{color:#c0392b;border-color:#f0b7b0}
@@ -122,6 +125,7 @@
     <div id="mgr"></div>
     <button class="copy" id="addList">新增名單</button>
     <button class="btn2" id="pinBtn">變更密碼</button>
+    <div class="offst" id="offState">離線使用：檢查中…</div>
     <div class="msg" id="msg"></div>
   </div>
 </div>
@@ -192,7 +196,13 @@
   S.pin = store.get('lt_pin', '');
 
   async function rawApi(body) {
-    const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) });
+    const read = body.action === 'list' || body.action === 'get';
+    const ac = window.AbortController ? new AbortController() : null;
+    const tm = ac && read ? setTimeout(() => ac.abort(), 12000) : null;
+    let r;
+    try { r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body), signal: ac ? ac.signal : undefined }); }
+    catch (e) { throw new Error(e && e.name === 'AbortError' ? '網路太慢' : '沒有網路'); }
+    finally { if (tm) clearTimeout(tm); }
     const j = await r.json();
     if (!j.ok) throw new Error(j.msg || '讀取失敗');
     return j;
@@ -435,8 +445,9 @@
     say('讀取名單中…');
     try {
       const j = await api({ action: 'get', key: key });
-      S.data = j.data;
       store.set('lt_cache_' + key, j.data);
+      if (S.spinning) return;
+      S.data = j.data;
       say('名單更新時間：' + (j.data.updated || '') + '（已存在這台，沒網路也能抽）');
     } catch (e) {
       const c = store.get('lt_cache_' + key, null);
@@ -466,10 +477,24 @@
     if (up) return up.key;
     return S.tours[0] ? S.tours[0].key : '';
   }
+  /* 打開就先顯示存在這台的名單，不用等網路 */
+  function showCached() {
+    const tours = (store.get('lt_tours', []) || []).filter(t => store.get('lt_cache_' + t.key, null));
+    if (!tours.length) return false;
+    S.tours = tours;
+    const last = store.get('lt_last', '');
+    const k = tours.some(t => t.key === last) ? last : pickDefault();
+    S.data = store.get('lt_cache_' + k, null);
+    if (!S.data) return false;
+    renderAll();
+    say('同步名單中…');
+    return true;
+  }
   async function init() {
     try {
-      say('讀取中…');
+      if (!S.data) say('讀取中…');
       const j = await api({ action: 'list' });
+      if (S.spinning) { store.set('lt_tours', j.tours || []); return; }
       S.tours = j.tours || [];
       store.set('lt_tours', S.tours);
       if (!S.tours.length) { S.data = null; renderAll(); say('還沒有任何抽獎名單，請先在 Excel 按「上傳到轉盤」'); return; }
@@ -662,9 +687,24 @@
   $('setBox').addEventListener('click', e => { if (e.target === $('setBox')) $('setBox').hidden = true; });
   $('pinIn').addEventListener('keydown', e => { if (e.key === 'Enter') $('pinOk').click(); });
 
-  renderAll();
-  init();
-  if ('serviceWorker' in navigator) { try { navigator.serviceWorker.register('sw.js'); } catch (e) {} }
+  if (!showCached()) renderAll();
+  $('refBtn').classList.add('busy');
+  init().finally(() => $('refBtn').classList.remove('busy'));
+  async function checkOffline() {
+    const el = $('offState');
+    try {
+      if (!('serviceWorker' in navigator) || !window.caches) { el.className = 'offst no'; el.textContent = '這個瀏覽器不支援離線使用'; return; }
+      await navigator.serviceWorker.ready;
+      const page = await caches.match('./index.html');
+      const names = (store.get('lt_tours', []) || []).length;
+      if (page) { el.className = 'offst ok'; el.textContent = '離線使用：已準備好' + (names ? '（' + names + ' 團名單）' : ''); }
+      else { el.className = 'offst no'; el.textContent = '離線使用：還沒準備好，請連網重開一次'; }
+    } catch (e) { el.className = 'offst no'; el.textContent = '離線使用：還沒準備好，請連網重開一次'; }
+  }
+  if ('serviceWorker' in navigator) {
+    try { navigator.serviceWorker.register('sw.js').then(() => setTimeout(checkOffline, 1500)); } catch (e) {}
+  } else checkOffline();
+  $('gearBtn').addEventListener('click', checkOffline);
 })();
 </script>
 </body>
