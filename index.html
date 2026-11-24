@@ -474,10 +474,10 @@
   async function prefetchAll() {
     const keep = new Set(S.tours.map(t => t.key));
     try { Object.keys(localStorage).forEach(k => { if (k.indexOf('lt_cache_') === 0 && !keep.has(k.slice(9))) localStorage.removeItem(k); }); } catch (e) {}
-    for (const t of S.tours) {
-      if (S.data && t.key === S.data.key) continue;
-      try { const j = await api({ action: 'get', key: t.key }); store.set('lt_cache_' + t.key, j.data); } catch (e) {}
-    }
+    /* 每一團同時下載，幾秒內全部存好，切換不同團就不用等 */
+    await Promise.all(S.tours.filter(t => !(S.data && t.key === S.data.key)).map(t =>
+      api({ action: 'get', key: t.key }).then(j => store.set('lt_cache_' + t.key, j.data)).catch(() => {})
+    ));
   }
   function pickDefault() {
     const last = store.get('lt_last', '');
@@ -511,8 +511,8 @@
       store.set('lt_tours', S.tours);
       if (!S.tours.length) { S.data = null; renderAll(); say('還沒有任何抽獎名單，請先在 Excel 按「上傳到轉盤」'); return; }
       const key = (S.data && S.tours.some(t => t.key === S.data.key)) ? S.data.key : pickDefault();
-      await loadTour(key);
       prefetchAll();
+      await loadTour(key);
     } catch (e) {
       const tours = store.get('lt_tours', []).filter(t => store.get('lt_cache_' + t.key, null));
       if (tours.length) {
@@ -708,8 +708,9 @@
       if (!('serviceWorker' in navigator) || !window.caches) { el.className = 'offst no'; el.textContent = '這個瀏覽器不支援離線使用'; return; }
       await navigator.serviceWorker.ready;
       const page = await caches.match('./index.html');
-      const names = (store.get('lt_tours', []) || []).length;
-      if (page) { el.className = 'offst ok'; el.textContent = '離線使用：已準備好' + (names ? '（' + names + ' 團名單）' : ''); }
+            const tl = store.get('lt_tours', []) || [];
+      const saved = tl.filter(t => store.get('lt_cache_' + t.key, null)).length;
+      if (page) { el.className = 'offst ok'; el.textContent = '離線使用：已準備好（' + saved + '/' + tl.length + ' 團名單）'; }
       else { el.className = 'offst no'; el.textContent = '離線使用：還沒準備好，請連網重開一次'; }
     } catch (e) { el.className = 'offst no'; el.textContent = '離線使用：還沒準備好，請連網重開一次'; }
   }
